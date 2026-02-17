@@ -1,0 +1,75 @@
+---
+title: "Enhance the speed of data retrieval by indexing"
+date: "2026-02-17"
+description: "Can indexing be an all-in-one solution?"
+hidden: false
+---
+
+## Problem
+
+- 고객사로부터 통계 조회 기능이 되지 않는다는 연락을 받았다.
+- 회사에서 개발 및 제공하는 통계 페이지에서 통계 조회 및 페이지 렌더링(정확히는 결과 테이블 렌더링) 시간이 지나치게 오래 걸린다.
+- 일주일치 데이터만 조회해도 조회 버튼을 누른 순간부터 결과 테이블 렌더링까지 1분 가까운 시간(정확히는 56초 정도) 소요된다.
+- (인내심을 가지고 1분 정도 기다리거나, 조회 버튼 클릭 후 인스타그램 피드를 잠시 둘러본다면)조회 자체는 되지만, 페이지 렌더링이 지나치게 오래 걸려서 사용자 입장에서는 장애로 인지하게 된 것.
+- 병목이 발생하는 부분은 어디인가?
+
+## Does query matter?
+- 가장 먼저 통계 조회 시 사용되는 쿼리문을 분석했다. 
+```
+SELECT DISTINCT a.agtname,
+    (Subquery1) as INBOUND,
+    (Subquery2) as Outbound,
+    ...
+FROM userinfo as A
+WHERE $Buff
+ORDER BY A.agtname ASC
+```
+- 메인 쿼리 내부에 통계 조회 항목에 해당하는 서브 쿼리를 삽입한 방식이다. 예를 들어 조회 항목이 10개라면 서브 쿼리도 10개가 되는 구성이다.(스칼라 서브쿼리)
+- 메인 쿼리 결과에 해당하는 agtname을 가져와서, 각 agtname에 해당하는 항목(서브쿼리) 결과값을 구한다. 그리고 다음 agtname으로 넘어간다.
+
+위 쿼리문에 대한 EXPLAIN ANALYZE 결과는 아래와 같다.(테이블 이름은 임의로 statB, statC라고 명명한다)
+- 각 agtname에 대해서 12개의 서브쿼리를 32번 실행했다는 것을 실행한다.
+-- 총 서브쿼리 실행 횟수 = 12 x 32 = 384번
+- 조회 테이블(statB, statC)을 Full Scan 하고 있음.
+
+```
+"Unique  (cost=672177.82..672177.85 rows=1 width=8) (actual time=56685.007..56685.016 rows=6 loops=1)"
+"  ->  Sort  (cost=672177.82..672177.82 rows=1 width=8) (actual time=56685.006..56685.006 rows=32 loops=1)"
+"        Sort Key: a.agtname, ((SubPlan 1)), ((SubPlan 2)), ((SubPlan 3)), ((SubPlan 4)), ((SubPlan 5)), ((SubPlan 6)), ((SubPlan 7)), ((SubPlan 8)), ((SubPlan 9)), ((SubPlan 10)), ((SubPlan 11)), ((SubPlan 12))"
+"        Sort Method: quicksort  Memory: 27kB"
+"        ->  Seq Scan on userinfo a  (cost=0.00..672177.81 rows=1 width=8) (actual time=1776.929..56684.941 rows=32 loops=1)"
+"              Filter: (((localid)::text = '01'::text) AND ('***'::text ~~ ((agtgroupname)::text || '%'::text)))"
+"              Rows Removed by Filter: 30"
+"              SubPlan 1"
+"                ->  Aggregate  (cost=35251.63..35251.64 rows=1 width=0) (actual time=84.482..84.482 rows=1 loops=32)"
+"                      ->  Seq Scan on statB b  (cost=0.00..35251.63 rows=1 width=0) (actual time=76.491..84.479 rows=3 loops=32)"
+"                            Filter: (((syyyymmdd)::text >= '20260202'::text) AND ((syyyymmdd)::text <= '20260217'::text) AND ((hungtae)::text = 'IE'::text) AND ((co_ext_gubun)::text = 'I'::text) AND ((in_out_gubun)::text = 'I'::text) AND ((ag_gubun)::text = 'A'::text) AND (calltype = 1) AND ((agname)::text = (a.agtname)::text))"
+"                            Rows Removed by Filter: 535977"
+...
+"              SubPlan 12"
+"                ->  Aggregate  (cost=66898.18..66898.19 rows=1 width=4) (actual time=178.512..178.512 rows=1 loops=32)"
+"                      ->  Seq Scan on statC c  (cost=0.00..66898.18 rows=1 width=4) (actual time=177.876..178.509 rows=4 loops=32)"
+"                            Filter: (((syyyymmdd)::text >= '20260202'::text) AND ((syyyymmdd)::text <= '20260217'::text) AND (status_type = 1005) AND ((agname)::text = (a.agtname)::text))"
+"                            Rows Removed by Filter: 1568244"
+"Total runtime: 56685.161 ms"
+
+```
+
+## What are the options to solve the problem?
+
+두 가지 옵션이 있다.
+1. 쿼리 구조 수정
+- 다중 반복 실행(agtname 숫자 N) x 서브쿼리 숫자 만큼 쿼리가 실행되는 구조 수정.
+- Inline View + LEFT JOIN 방식으로 전환: 필요한 데이터 미리 준비한 후 Sorting.
+
+2. 인덱스 추가
+- Composite Index 추가
+
+## I go for indexing
+인덱스 추가 방식으로 진행했다. 세 가지 이유 때문이다.
+1. 기존 레거시 코드 구조에 익숙한 조직
+2. 기존 레거시 코드 수정은 (현재)조직의 우선순위가 아님 
+3. 인덱스 추가 방식이 쿼리 구조 수정과 비교하여 최소비용/최대효율
+
+## Result
+인덱스 추가 후 통계 조회 속도가 밀리세컨드(millisecond) 단위로 단축 되었음.
