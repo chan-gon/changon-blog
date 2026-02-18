@@ -11,6 +11,7 @@ export type BlogPost = {
     content: string; // The raw MDX content
     description?: string;
     hidden?: boolean;
+    tags?: string[];
 };
 
 
@@ -51,6 +52,7 @@ export function getBlogPosts(): BlogPost[] {
             content: content,
             description: data.description,
             hidden: data.hidden,
+            tags: data.tags,
         } as BlogPost;
     });
 
@@ -69,4 +71,9 @@ export function getBlogPosts(): BlogPost[] {
 export function getPost(slug: string): BlogPost | undefined {
     const posts = getBlogPosts();
     return posts.find((post) => post.slug === slug);
+}
+
+export function getPostsByTag(tag: string): BlogPost[] {
+    const posts = getBlogPosts();
+    return posts.filter((post) => post.tags && post.tags.includes(tag));
 }
