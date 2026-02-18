@@ -17,15 +17,17 @@ export default async function BlogPostPage({
 
     return (
         <div>
-            <h1 className="text-4xl font-bold mb-4 capitalize">
+            <h1 className="text-4xl font-bold mb-3 capitalize">
                 {post.title}
             </h1>
+            <h4 className="text-gray-600 mb-4">
+                {post.description}
+            </h4>
             <div className="text-gray-600 mb-4">
                 Published on {post.date}
             </div>
             <article className="max-w-4xl bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-
-                <div className="prose max-w-none">
+                <div className="prose max-w-none text-gray-900 font-sans">
                     <MDXRemote source={post.content} />
                 </div>
 
@@ -39,7 +41,7 @@ export default async function BlogPostPage({
                                 <Link
                                     key={tag}
                                     href={`/blog/tags/${tag}`}
-                                    className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
+                                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
                                 >
                                     {tag}
                                 </Link>

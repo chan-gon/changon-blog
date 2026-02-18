@@ -1,20 +1,25 @@
 ---
 title: "Enhance the speed of data retrieval by indexing"
-date: "2026-02-17"
-description: "Can indexing be an all-in-one solution?"
+date: "Feb 16, 2026"
+description: "My journey to fix the issue with scalar subquery"
 hidden: false
 tags: ["database", "performance", "optimization"]
 ---
 
 ## Problem
 
+- One day I got a call from the client saying the statistics lookup feature is not working.
+- Turned out, it took quite a long time to retrieve the data from the database and render the table in the browser.
+- Even fetching just one week of data(7 days) took almost a minute(specifically 56 seconds).
+- Technically, it works anyway. But from a user's perspective, it could be considered as a malfunction for users(Which is why the client called).
+
 - 고객사로부터 통계 조회 기능이 되지 않는다는 연락을 받았다.
-- 회사에서 개발 및 제공하는 통계 페이지에서 통계 조회 및 페이지 렌더링(정확히는 결과 테이블 렌더링) 시간이 지나치게 오래 걸린다.
+- 확인 결과, 통계 조회 및 페이지 렌더링(정확히는 결과 테이블 렌더링) 시간이 지나치게 오래 걸린다.
 - 일주일치 데이터만 조회해도 조회 버튼을 누른 순간부터 결과 테이블 렌더링까지 1분 가까운 시간(정확히는 56초 정도) 소요된다.
 - (인내심을 가지고 1분 정도 기다리거나, 조회 버튼 클릭 후 인스타그램 피드를 잠시 둘러본다면)조회 자체는 되지만, 페이지 렌더링이 지나치게 오래 걸려서 사용자 입장에서는 장애로 인지하게 된 것.
-- 병목이 발생하는 부분은 어디인가?
 
 ## Does query matter?
+- Checked the query first.
 - 가장 먼저 통계 조회 시 사용되는 쿼리문을 분석했다. 
 ```
 SELECT DISTINCT a.agtname,
@@ -25,9 +30,13 @@ FROM userinfo as A
 WHERE $Buff
 ORDER BY A.agtname ASC
 ```
+- The subqueries for each statistical field are embedded directly inside the main query. For instance, if there are 10 metrics to retrieve, there will be 10 scalar subqueries in the SELECT clause.
+- The query first fetches the agtname values from the main result set, then calculates each corresponding metric (via subqueries) for that specific agtname, and repeats the process for the next agtname.
 - 메인 쿼리 내부에 통계 조회 항목에 해당하는 서브 쿼리를 삽입한 방식이다. 예를 들어 조회 항목이 10개라면 서브 쿼리도 10개가 되는 구성이다.(스칼라 서브쿼리)
 - 메인 쿼리 결과에 해당하는 agtname을 가져와서, 각 agtname에 해당하는 항목(서브쿼리) 결과값을 구한다. 그리고 다음 agtname으로 넘어간다.
 
+- The EXPLAIN ANALYZE result for the query (with table names renamed to statB and statC for simplicity) shows that for each agtname, 12 subqueries were executed 32 times(Total number of subquery executions = 12 × 32 = 384).
+- The referenced tables (statB, statC) are being fully scanned (Full Table Scan).
 위 쿼리문에 대한 EXPLAIN ANALYZE 결과는 아래와 같다.(테이블 이름은 임의로 statB, statC라고 명명한다)
 - 각 agtname에 대해서 12개의 서브쿼리를 32번 실행했다는 것을 실행한다.
 -- 총 서브쿼리 실행 횟수 = 12 x 32 = 384번
@@ -58,6 +67,12 @@ ORDER BY A.agtname ASC
 
 ## What are the options to solve the problem?
 
+There are two options.
+1. Refactor the query structure
+- Fix the structure where the query runs repeatedly: (number of agtname rows = N) x (number of subqueries).
+- Convert it to an Inline View + LEFT JOIN approach: prepare the required dta first, then apply sorting.
+2. Add an index
+- Add a composite index.
 두 가지 옵션이 있다.
 1. 쿼리 구조 수정
 - 다중 반복 실행(agtname 숫자 N) x 서브쿼리 숫자 만큼 쿼리가 실행되는 구조 수정.
@@ -67,10 +82,17 @@ ORDER BY A.agtname ASC
 - Composite Index 추가
 
 ## I go for indexing
+
+I went with indexing. For three reasons.
+1. The organization is already familiar with the existing legacy code structure.
+2. Refactoring the legacy code is not a current priority.
+3. Adding an index offers the lowest cost with the highest efficiency compared to restructuring the query.
+
 인덱스 추가 방식으로 진행했다. 세 가지 이유 때문이다.
 1. 기존 레거시 코드 구조에 익숙한 조직
 2. 기존 레거시 코드 수정은 (현재)조직의 우선순위가 아님 
 3. 인덱스 추가 방식이 쿼리 구조 수정과 비교하여 최소비용/최대효율
 
 ## Result
+- After adding the index, the statistics query performance improved to the millisecond level.
 인덱스 추가 후 통계 조회 속도가 밀리세컨드(millisecond) 단위로 단축 되었음.
