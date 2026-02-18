@@ -32,11 +32,12 @@ ORDER BY A.agtname ASC
 ```
 - The subqueries for each statistical field are embedded directly inside the main query. For instance, if there are 10 metrics to retrieve, there will be 10 scalar subqueries in the SELECT clause.
 - The query first fetches the agtname values from the main result set, then calculates each corresponding metric (via subqueries) for that specific agtname, and repeats the process for the next agtname.
+- The EXPLAIN ANALYZE result for the query (with table names renamed to statB and statC for simplicity) shows that for each agtname, 12 subqueries were executed 32 times(Total number of subquery executions = 12 × 32 = 384).
+- The referenced tables (statB, statC) are being fully scanned (Full Table Scan).
+
 - 메인 쿼리 내부에 통계 조회 항목에 해당하는 서브 쿼리를 삽입한 방식이다. 예를 들어 조회 항목이 10개라면 서브 쿼리도 10개가 되는 구성이다.(스칼라 서브쿼리)
 - 메인 쿼리 결과에 해당하는 agtname을 가져와서, 각 agtname에 해당하는 항목(서브쿼리) 결과값을 구한다. 그리고 다음 agtname으로 넘어간다.
 
-- The EXPLAIN ANALYZE result for the query (with table names renamed to statB and statC for simplicity) shows that for each agtname, 12 subqueries were executed 32 times(Total number of subquery executions = 12 × 32 = 384).
-- The referenced tables (statB, statC) are being fully scanned (Full Table Scan).
 위 쿼리문에 대한 EXPLAIN ANALYZE 결과는 아래와 같다.(테이블 이름은 임의로 statB, statC라고 명명한다)
 - 각 agtname에 대해서 12개의 서브쿼리를 32번 실행했다는 것을 실행한다.
 -- 총 서브쿼리 실행 횟수 = 12 x 32 = 384번
@@ -73,6 +74,7 @@ There are two options.
 - Convert it to an Inline View + LEFT JOIN approach: prepare the required dta first, then apply sorting.
 2. Add an index
 - Add a composite index.
+
 두 가지 옵션이 있다.
 1. 쿼리 구조 수정
 - 다중 반복 실행(agtname 숫자 N) x 서브쿼리 숫자 만큼 쿼리가 실행되는 구조 수정.
@@ -95,4 +97,4 @@ I went with indexing. For three reasons.
 
 ## Result
 - After adding the index, the statistics query performance improved to the millisecond level.
-인덱스 추가 후 통계 조회 속도가 밀리세컨드(millisecond) 단위로 단축 되었음.
+- 인덱스 추가 후 통계 조회 속도가 밀리세컨드(millisecond) 단위로 단축 되었음.
