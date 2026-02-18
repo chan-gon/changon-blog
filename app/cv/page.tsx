@@ -7,10 +7,10 @@ export const metadata: Metadata = {
 
 export default function Cv() {
     return (
-        <div className="max-w-screen-xl font-sans">
-            <h1 className="text-3xl font-serif text-black mb-6">CV</h1>
+        <div className="max-w-screen-x font-sans">
+            <h1 className="text-3xl font-bold mb-6">CV</h1>
 
-            <div className="space-y-10">
+            <div className="space-y-10 p-6 bg-white border border-gray-200 rounded-lg">
                 <section>
                     <h2 className="text-sm font-bold tracking-widest uppercase mb-3 text-gray-500">Work Experiences</h2>
 
@@ -21,11 +21,64 @@ export default function Cv() {
                         <p className="text-lg font-bold mb-6 mt-4">Junior Software Engineer | 2022 – Present</p>
 
                         <div className="space-y-6 text-lg leading-relaxed text-gray-800">
-                            <p>
-                                Developed and maintained PHP (Laravel) + React web applications integrated with the company's contact center solution in both Linux and Windows environments
-                                Built customized APIs according to client’s requirements such as call control, agent status monitoring and real-time dashboards for agents and supervisors
-                                Modified and maintained contact center solution modules written in C and C++ according to client’s requirements.
-                            </p>
+                            <ul className="list-disc pl-5 space-y-2">
+                                <li>
+                                    Developed and maintained PHP (Laravel) + React web applications integrated with the company's contact center solution in both Linux and Windows environments.
+                                </li>
+                                <li>
+                                    Built customized APIs according to client’s requirements such as call control, agent status monitoring, and real-time dashboards for agents and supervisors.
+                                </li>
+                                <li>
+                                    Modified and maintained contact center solution modules written in C and C++ according to client’s requirements.
+                                </li>
+                            </ul>
+
+                            <div className="mt-4">
+                                <h4 className="font-bold text-gray-900 mb-3">What I did</h4>
+                                <ul className="list-none pl-0 space-y-4">
+                                    <li>
+                                        <strong>1. Legacy Code Audit and Enhancement</strong>
+                                        <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-700 text-base">
+                                            <li>Remediated security vulnerabilities.</li>
+                                            <li>Optimized data processing bottlenecks.</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <strong>2. Modern Development Environment Proposal and System Design</strong>
+                                        <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-700 text-base">
+                                            <li>Transitioned from procedural legacy PHP to a Laravel + React based architecture.</li>
+                                            <li>Established code conventions.</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <strong>3. In-house Git Server Deployment</strong>
+                                        <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-700 text-base">
+                                            <li>Built an in-house Git server(built with Gitea) to facilitate project configuration management.</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div className="mt-4">
+                                <h4 className="font-bold text-gray-900 mb-3">What I learned</h4>
+                                <ul className="list-none pl-0 space-y-3">
+                                    <li>
+                                        <strong>1. </strong>Latest technology is not always the answer. Customers pay for solutions that meet their needs, not for the technology itself.
+                                    </li>
+                                    <li>
+                                        <strong>2. </strong>Technology is not the only solution. Non-technical approaches (such as communication and attitude) can also be effective ways to solve problems.
+                                    </li>
+                                    <li>
+                                        <strong>3. </strong>Code must be tested.
+                                    </li>
+                                    <li>
+                                        <strong>4. </strong>What is good or bad is context-dependent. While technical standards exist, the "best" code depends on the specific situation and constraints.
+                                    </li>
+                                    <li>
+                                        <strong>5. </strong>Being a "good collaborator" is more valuable than being an "egoistic artist" in a team.
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
 
