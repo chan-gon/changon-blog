@@ -2,9 +2,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 
-const contentDirectory = path.join(process.cwd(), "content/blog");
-
-export type BlogPost = {
+export type Post = {
     slug: string;
     title: string;
     date: string;
@@ -12,8 +10,9 @@ export type BlogPost = {
     description?: string;
     hidden?: boolean;
     tags?: string[];
+    githubUrl?: string;
+    demoUrl?: string;
 };
-
 
 function getMDXFiles(dir: string): string[] {
     if (!fs.existsSync(dir)) {
@@ -22,23 +21,24 @@ function getMDXFiles(dir: string): string[] {
     let results: string[] = [];
     const list = fs.readdirSync(dir);
     list.forEach((file) => {
-        file = path.join(dir, file);
-        const stat = fs.statSync(file);
+        const fullPath = path.join(dir, file);
+        const stat = fs.statSync(fullPath);
         if (stat && stat.isDirectory()) {
             /* Recurse into a subdirectory */
-            results = results.concat(getMDXFiles(file));
+            results = results.concat(getMDXFiles(fullPath));
         } else {
             /* Is a file */
-            if (path.extname(file) === ".mdx") {
-                results.push(file);
+            if (path.extname(fullPath) === ".mdx") {
+                results.push(fullPath);
             }
         }
     });
     return results;
 }
 
-export function getBlogPosts(): BlogPost[] {
-    const filePaths = getMDXFiles(contentDirectory);
+export function getPosts(contentType: "blog" | "projects"): Post[] {
+    const dir = path.join(process.cwd(), "content", contentType);
+    const filePaths = getMDXFiles(dir);
 
     const posts = filePaths.map((filePath) => {
         const fileContent = fs.readFileSync(filePath, "utf8");
@@ -53,7 +53,9 @@ export function getBlogPosts(): BlogPost[] {
             description: data.description,
             hidden: data.hidden,
             tags: data.tags,
-        } as BlogPost;
+            githubUrl: data.githubUrl,
+            demoUrl: data.demoUrl,
+        } as Post;
     });
 
     // Filter out hidden posts
@@ -68,12 +70,10 @@ export function getBlogPosts(): BlogPost[] {
     });
 }
 
-export function getPost(slug: string): BlogPost | undefined {
-    const posts = getBlogPosts();
-    return posts.find((post) => post.slug === slug);
-}
+export const getBlogPosts = () => getPosts("blog");
+export const getBlogPost = (slug: string) => getBlogPosts().find(p => p.slug === slug);
+export const getBlogPostsByTag = (tag: string) => getBlogPosts().filter((post) => post.tags && post.tags.includes(tag));
 
-export function getPostsByTag(tag: string): BlogPost[] {
-    const posts = getBlogPosts();
-    return posts.filter((post) => post.tags && post.tags.includes(tag));
-}
+export const getProjectPosts = () => getPosts("projects");
+export const getProjectPost = (slug: string) => getProjectPosts().find(p => p.slug === slug);
+export const getProjectPostsByTag = (tag: string) => getProjectPosts().filter((post) => post.tags && post.tags.includes(tag));

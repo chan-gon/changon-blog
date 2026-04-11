@@ -18,7 +18,7 @@ export default function Cv() {
                         <h3 className="text-4xl font-serif mb-2 text-black">
                             CallNet Korea. <span className="font-serif italic font-normal text-3xl text-gray-600">Seoul, S.Korea</span>
                         </h3>
-                        <p className="text-lg font-bold mb-6 mt-4">Junior Software Engineer | 2022 – Present</p>
+                        <p className="text-lg font-bold mb-6 mt-4">Junior Software Engineer | 2022 – 2026</p>
 
                         <div className="space-y-6 text-lg leading-relaxed text-gray-800">
                             <ul className="list-disc pl-5 space-y-2">
@@ -26,38 +26,18 @@ export default function Cv() {
                                     Developed and maintained PHP (Laravel) + React web applications integrated with the company's contact center solution in both Linux and Windows environments.
                                 </li>
                                 <li>
-                                    Built customized APIs according to client’s requirements such as call control, agent status monitoring, and real-time dashboards for agents and supervisors.
+                                    Built customized WebSocket APIs according to client’s requirements such as call control, agent status monitoring, and real-time dashboards for agents and supervisors.
                                 </li>
                                 <li>
                                     Modified and maintained contact center solution modules written in C and C++ according to client’s requirements.
                                 </li>
+                                <li>
+                                    Developed an in-house AI chatbot that utilizes RAG (Retrieval-Augmented Generation) to access accumulated company documentation and provide natural language answers to work-related inquiries.
+                                </li>
+                                <li>
+                                    Legacy Code Audit and Enhancement
+                                </li>
                             </ul>
-
-                            <div className="mt-4">
-                                <h4 className="font-bold text-gray-900 mb-3">What I did</h4>
-                                <ul className="list-none pl-0 space-y-4">
-                                    <li>
-                                        <strong>1. Legacy Code Audit and Enhancement</strong>
-                                        <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-700 text-base">
-                                            <li>Remediated security vulnerabilities.</li>
-                                            <li>Optimized data processing bottlenecks.</li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <strong>2. Modern Development Environment Proposal and System Design</strong>
-                                        <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-700 text-base">
-                                            <li>Transitioned from procedural legacy PHP to a Laravel + React based architecture.</li>
-                                            <li>Established code conventions.</li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <strong>3. In-house Git Server Deployment</strong>
-                                        <ul className="list-disc pl-5 mt-1 space-y-1 text-gray-700 text-base">
-                                            <li>Built an in-house Git server(built with Gitea) to facilitate project configuration management.</li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </div>
 
                             <div className="mt-4">
                                 <h4 className="font-bold text-gray-900 mb-3">What I learned</h4>

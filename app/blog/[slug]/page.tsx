@@ -1,4 +1,4 @@
-import { getPost } from "@/lib/blog";
+import { getBlogPost } from "@/lib/mdx";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -9,7 +9,7 @@ export default async function BlogPostPage({
     params: Promise<{ slug: string }>;
 }) {
     const { slug } = await params;
-    const post = getPost(slug);
+    const post = getBlogPost(slug);
 
     if (!post) {
         notFound();

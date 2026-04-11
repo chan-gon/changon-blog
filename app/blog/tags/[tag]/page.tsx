@@ -1,4 +1,4 @@
-import { getPostsByTag } from "@/lib/blog";
+import { getBlogPostsByTag } from "@/lib/mdx";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -12,7 +12,7 @@ export default async function TagPage({
     // Decode the tag in case it contains spaces or special characters
     const decodedTag = decodeURIComponent(tag);
 
-    const posts = getPostsByTag(decodedTag);
+    const posts = getBlogPostsByTag(decodedTag);
 
     if (posts.length === 0) {
         return (

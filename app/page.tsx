@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getBlogPosts } from "@/lib/blog";
+import { getBlogPosts } from "@/lib/mdx";
 import Search from "@/components/search";
 import type { Metadata } from "next";
 

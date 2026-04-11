@@ -1,0 +1,84 @@
+---
+title: "In-House AI Chatbot with RAG & EEVE-Korean"
+date: "Apr 12, 2026"
+description: "Building an In-house AI Chatbot with RAG & EEVE-Korean"
+hidden: false
+tags: ["AI", "chatbot", "RAG", "Ollama"]
+---
+
+## Overview
+**(KR)**
+외부 API나 클라우드 리소스 없이 사내 서버(On-premise) 안에서만 구동되는 AI 챗봇입니다.
+한국어 특화 EEVE 모델에 RAG을 접목하여 내부 기술 문서를 바탕으로 답변을 생성합니다.
+
+**(ENG)**
+A security-focused in-house AI chatbot built to accelerate work efficiency while keeping sensitive data under lock and key.
+It operates entirely on-premise with zero reliance on external APIs or cloud resources.
+By combining the Korean-optimized EEVE model with RAG, it provides accurate answers based on attached documents.
+
+## Background(The reason why I built it)
+**(KR)**
+기존의 사내 인트라넷은 LIKE, = 와 같은 SQL 쿼리 형식으로 검색 결과를 반환한다. 따라서 사용자가 검색 키워드를 정확히 모르면 원하는 정보를 찾기 힘들었고, 결과에 대한 연관 데이터를 찾으려면 수동으로 일일이 데이터를 뒤져야 하는 번거로움이 있었다.
+그래서 자연어 검색을 통해 원하는 정보 및 연관 정보까지 검색 가능한 챗봇을 개발하여 그 가능성을 확인해보고 싶었다.
+
+**(ENG)**
+Searching for data on company's current intranet relies on SQL-based queries such as LIKE or =. If you don't have the exact keywords, you can't get the data you want. And data needs to be retrieved manually if someone wants the data related to the result.
+Company needs to improve the search engine of its intranet, and it was just the right moment to build a natural language-based searcher that gets what people ask.
+
+## Tech Stack
+- **OS**: Debian Linux 12
+- **Language**: Python 3
+- **LLM Engine**: Ollama
+    - **Model**: [EEVE-Korean-Instruct-10.8B](https://huggingface.co/heegyu/EEVE-Korean-Instruct-10.8B-v1.0-GGUF)
+    - **Format**: GGUF
+- **Framework**: LangChain 0.3.x, Streamlit
+- **Vector DB**: FAISS
+- **Embeddings**: BAAI/bge-m3
+
+## Key Features
+**1. Two types of chat mode**
+- Divide **Basic Mode** for general chats and a **RAG Mode** that sticks strictly to the context of uploaded files.
+
+**2. Security-first architecture**
+- Everything happens inside the server.
+
+**3. Korean-specialised EEVE engine**
+- With EEVE (Efficient and Effective Vocabulary Expansion) method, it handles Korean text efficiently.
+
+**4. Caching**
+- Uses caching to remember past chats and grounds its answers in technical docs to keep the hallucinations to a minimum.
+
+## Challenges
+**1. 답변의 유연성 부족 / Lack of Flexibility in Responses**
+
+**(KR)**
+질문의 전체 문맥을 깊이 있게 파악하기보다는 키워드 중심으로 다소 정형화된 답변을 내놓는 경향이 있다.
+
+**(ENG)**
+It tends to generate static responses based on keywords rather than fully gasping the subtle nuances of the context.
+Not sure if it's possible to overcome only by writin the sophisticated prompt.
+
+**2. 데이터 타입 확장 및 검증 / Data Type Expansion and Validation**
+
+**(KR)**
+현재는 소량의 txt 파일로 테스트를 마친 단계이므로 향후 PDF, CSV 등 다양한 형식의 대용량 파일에서도 답변의 품질이 유지되는지 추가적인 검증이 필요하다.
+
+**(ENG)**
+Testing has been completed only with small-scale TXT files. Future steps include verifying response quality across various large-scale formats such as PDF and CSV.
+
+**3. 실시간 데이터 동기화 / Real-Time Data Synchronization**
+
+**(KR)**
+지금은 파일을 직접 업로드하는 방식이지만, 실제 인트라넷의 방대한 데이터를 활용하려면 DB와의 실시간 연동이 필수적입니다. 데이터의 삽입/수정/삭제가 즉시 반영되는 '임베딩 자동화 파이프라인' 구축을 다음 목표로 잡고 있습니다.
+
+**(ENG)**
+While the current system relies on manual file uploads, real-time integration with the corporate database is essential for handling large-scale data. 
+Developing an automated embedding pipeline that keeps the knowledge base up-to-date with live DB changes is needed.
+
+**4. 사용자 직급에 따른 답변 결과 필터링 / Showing filtered responses based on user rank**
+
+**(KR)**
+대표, 부장, 과장, 대리 등과 같은 직급에 따라 접근 데이터가 다르기 때문에 사용자에 따른 선별된 응답을 하는 것이 필요하다.
+
+**(ENG)**
+Depending on job titles, accessible data is different. It's quite necessary to provide selected responses tailored to the rank of user.
