@@ -71,6 +71,9 @@ export default function Cv() {
                                     Created technical documentation to support ongoing maintenance and future development.
                                 </li>
                                 <li>
+                                    Reduced response times for the company intranet search and client dashboard statistics from 56 seconds to under one second on large datasets by analyzing query execution plans and adding targeted indexes.
+                                </li>
+                                <li>
                                     Secured HTTP communication for an internal web application by generating and deploying a self-signed SSL/TLS certificate with OpenSSL.
                                 </li>
                                 <li>
