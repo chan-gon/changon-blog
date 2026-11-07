@@ -36,7 +36,7 @@ function getMDXFiles(dir: string): string[] {
     return results;
 }
 
-export function getPosts(contentType: "blog" | "projects"): Post[] {
+export function getPosts(contentType: "posts" | "projects"): Post[] {
     const dir = path.join(process.cwd(), "content", contentType);
     const filePaths = getMDXFiles(dir);
 
@@ -62,15 +62,12 @@ export function getPosts(contentType: "blog" | "projects"): Post[] {
     const visiblePosts = posts.filter((post) => !post.hidden);
 
     // Sort posts by date (newest first)
-    return visiblePosts.sort((a, b) => {
-        if (a.date > b.date) {
-            return -1;
-        }
-        return 1;
-    });
+    return visiblePosts.sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
 }
 
-export const getBlogPosts = () => getPosts("blog");
+export const getBlogPosts = () => getPosts("posts");
 export const getBlogPost = (slug: string) => getBlogPosts().find(p => p.slug === slug);
 export const getBlogPostsByTag = (tag: string) => getBlogPosts().filter((post) => post.tags && post.tags.includes(tag));
 

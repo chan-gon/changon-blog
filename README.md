@@ -1,22 +1,27 @@
-
 # Chan Gon Kim's Blog
 
-A personal blog template built with Next.js 16 (App Router), TypeScript, and Tailwind CSS.
+A personal blog built with Next.js 16 (App Router), TypeScript, and Tailwind CSS.
+Posts and projects are MDX files in this repository, so there is no database or CMS.
 
 ## Features
 
 - **Next.js 16 App Router**
 - **MDX Support**
 - **Tailwind CSS v4**
+- **Post search, pagination, and tags**
+- **Projects section**
 
 ## Getting Started
 
-This project is open source. You can use this repository to build your own blog.
+This is for personal use, but you can use this source code to build your own blog.
 
 ### 1. Clone the repository
 
 ```bash
 git clone https://github.com/chan-gon/changon-blog.git
+```
+
+```bash
 cd changon-blog
 ```
 
@@ -34,65 +39,39 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Project Structure
+## Structure
 
-The project follows the standard Next.js App Router structure:
+This follows the standard Next.js App Router structure:
 
 - **`app/`**: Contains the application routes, layouts, and pages.
-    - `page.tsx`: The homepage.
+    - `page.tsx`: Redirects `/` to `/about`.
     - `layout.tsx`: The root layout including the navbar and global styles.
-    - `blog/`: Blog listing and post details routes.
-- **`components/`**: Reusable React components such as the `Navbar`.
-- **`content/blog/`**: MDX files are stored here. Each file represents a blog post with frontmatter (title, date, etc.).
-- **`lib/`**: Utility functions, including MDX processing logic (`blog.ts`) to read and parse content.
-- **`public/`**: Static assets like images and fonts.
+    - `not-found.tsx`: The 404 page.
+    - `posts/`: Post list, post details, and tag routes.
+    - `projects/`: Project list and project details routes.
+    - `about/`, `cv/`: Static pages.
+- **`components/`**: Reusable React components such as the `Navbar` and `Search`.
+- **`content/posts/`**: Post MDX files. Subfolders such as `2026/` are for organizing only and do not appear in the URL.
+- **`content/projects/`**: Project MDX files.
+- **`lib/mdx.ts`**: Reads and parses the MDX files.
+- **`proxy.ts`**: Returns the 404 page for URLs with invalid percent-encoding.
 
+## Writing Content
+
+Add an `.mdx` file to `content/posts/` or `content/projects/`. The file name becomes the URL, so it must be unique:
+
+```mdx
+---
+title: "Post title"
+date: "Nov 6, 2026"
+description: "A short summary"
+hidden: false
+tags: ["tag1", "tag2"]
 ---
 
-# Chan Gon Kim's Blog
-
-Next.js 16 (App Router), TypeScript, Tailwind CSS로 구축된 개인 블로그 템플릿입니다. 
-
-## 주요 기능
-
-- **Next.js 16 App Router**
-- **MDX Support**
-- **Tailwind CSS v4**
-
-## 시작하기
-
-이 프로젝트는 오픈 소스입니다. 이 저장소를 참고하여 자신만의 블로그를 만들 수 있습니다.
-
-### 1. 저장소 클론 (Clone)
-
-```bash
-git clone https://github.com/chan-gon/changon-blog.git
-cd changon-blog
+Write the content here.
 ```
 
-### 2. 의존성 설치
+Projects can also set `githubUrl` and `demoUrl`. Set `hidden: true` to remove an item from the site.
 
-```bash
-npm install
-```
-
-### 3. 개발 서버 실행
-
-```bash
-npm run dev
-```
-
-브라우저에서 [http://localhost:3000](http://localhost:3000)을 열어 확인합니다.
-
-## 프로젝트 구조
-
-이 프로젝트는 Next.js App Router의 표준 구조를 따릅니다.
-
-- **`app/`**: 애플리케이션 라우트, 레이아웃 및 페이지를 포함합니다.
-    - `page.tsx`: 홈페이지.
-    - `layout.tsx`: 네비게이션 바와 전역 스타일을 포함하는 루트 레이아웃.
-    - `blog/`: 블로그 목록 및 상세 페이지 라우트.
-- **`components/`**: `Navbar`와 같은 재사용 가능한 React 컴포넌트입니다.
-- **`content/blog/`**: MDX 파일이 저장되는 곳입니다. 각 파일은 프론트매터(제목, 날짜 등)를 포함한 블로그 포스트입니다.
-- **`lib/`**: 콘텐츠를 읽고 파싱하는 MDX 처리 로직(`blog.ts`)을 포함한 유틸리티 함수입니다.
-- **`public/`**: 이미지, 폰트 등 정적 자산입니다.
+The project list is generated at build time, so rebuild after adding a project.

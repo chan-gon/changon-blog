@@ -3,6 +3,15 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+    const post = getBlogPost(slug);
+    if (!post) {
+        return { title: "Post Not Found" };
+    }
+    return { title: post.title, description: post.description };
+}
+
 export default async function BlogPostPage({
     params,
 }: {
@@ -40,7 +49,7 @@ export default async function BlogPostPage({
                             {post.tags.map((tag) => (
                                 <Link
                                     key={tag}
-                                    href={`/blog/tags/${tag}`}
+                                    href={`/posts/tags/${tag}`}
                                     className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
                                 >
                                     {tag}

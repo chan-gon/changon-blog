@@ -15,16 +15,7 @@ export default async function TagPage({
     const posts = getBlogPostsByTag(decodedTag);
 
     if (posts.length === 0) {
-        return (
-            <div className="max-w-4xl mx-auto py-10 px-4">
-                <h1 className="text-3xl font-bold mb-8">
-                    No posts found for tag: <span className="text-blue-600">"{decodedTag}"</span>
-                </h1>
-                <Link href="/" className="text-blue-600 hover:underline">
-                    &larr; Back to all posts
-                </Link>
-            </div>
-        );
+        notFound();
     }
 
     return (
@@ -39,7 +30,7 @@ export default async function TagPage({
                         key={post.slug}
                         className="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow bg-white"
                     >
-                        <Link href={`/blog/${post.slug}`} className="block">
+                        <Link href={`/posts/${post.slug}`} className="block">
                             <h2 className="text-2xl font-semibold mb-2">
                                 {post.title}
                             </h2>
@@ -68,7 +59,7 @@ export default async function TagPage({
                 ))}
             </div>
             <div className="mt-8">
-                <Link href="/" className="text-gray-600 hover:text-gray-900">
+                <Link href="/posts" className="text-gray-600 hover:text-gray-900">
                     &larr; Back to all posts
                 </Link>
             </div>
