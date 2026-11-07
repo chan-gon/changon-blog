@@ -38,13 +38,16 @@ export default function Cv() {
                 <section>
                     <h2 className="text-sm font-bold tracking-widest uppercase mb-3 text-gray-500">Skills</h2>
                     <p className="mb-2">
-                        <strong className="text-black">Languages & Software:</strong> PHP (Laravel), Python, React, Next.js, JavaScript, jQuery, CSS, PostgreSQL
+                        <strong className="text-black">Backend:</strong> PHP (Laravel), Python, WebSocket
                     </p>
                     <p className="mb-2">
-                        <strong className="text-black">Operating Systems:</strong> Windows, Linux
+                        <strong className="text-black">Frontend:</strong> JavaScript, React, Next.js, jQuery, HTML/CSS
                     </p>
                     <p className="mb-2">
-                        <strong className="text-black">Tools:</strong> Git, Docker
+                        <strong className="text-black">Database:</strong> PostgreSQL
+                    </p>
+                    <p className="mb-2">
+                        <strong className="text-black">DevOps &amp; Tools:</strong> Linux, Git, Docker
                     </p>
                 </section>
 
